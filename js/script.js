@@ -16,22 +16,23 @@ let someObject = {
     }
 }
 
+
 function deepFreeze (obj) {
+
     function recursion (object) {
         for (let key in object) {
-            if (typeof object[key] === 'object') {
+            function redefineObjectDescriptors(object) {
                 Object.defineProperty(object, key, {
                     configurable: false,
                     writable: false,
                     enumerable: false
                 });
+            }
+            if (typeof object[key] === 'object') {
+                redefineObjectDescriptors(object);
                 deepFreeze(object[key]);
             } else {
-                Object.defineProperty(object, key, {
-                    configurable: false,
-                    writable: false,
-                    enumerable: false
-                });
+                redefineObjectDescriptors(object);
             }
         }
     }
@@ -41,7 +42,5 @@ function deepFreeze (obj) {
 deepFreeze(someObject);
 
 console.log(Object.getOwnPropertyDescriptor(someObject.obj, `obj`));
-
-console.log(someObject['obj']['obj']);
 
 console.log(someObject);
